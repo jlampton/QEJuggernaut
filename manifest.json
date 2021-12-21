@@ -1,0 +1,15 @@
+{
+    "manifestVersion": 1,
+    
+	"name": "QE Juggernaut",
+    "version": "1.0.0",
+	"author": "PlasmaticButter (Forked from JPiolho's QE Hunter)",
+	"date": "18/12/2021",
+	"description": "This is a multiplayer mod where one player is the Juggernaut and the other players are the hunters. The king is armed to the teeth and takes half damage. Eliminate the King to become the next King.",
+	"gamedir": "id1",
+	"screenshots": [
+    ],
+	
+	"download": "QEJuggernaut.zip",
+	"pak": "pak0.pak"
+}
