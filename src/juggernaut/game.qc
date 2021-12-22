@@ -151,9 +151,11 @@ void() Juggernaut_PutClientInServer =
         self = HydrateJuggernautPlayer(self);
         self.waitmin = time;
         self.pos1 = self.origin;
+        self.impulse = 7; // grab rocket launcher to indicate that other weapons are available.
 	}
     else {
-       // self.alpha = 1;
+        self = ResetNonJuggernautPlayer(self);
+        self.impulse = 1; // Set back to shotgun to remove any remnants of the last weapon used.
     }
 
     Juggernaut_PrintSpawnMessage(self);
@@ -178,23 +180,33 @@ void(entity player) Juggernaut_AssignTeamToPlayer =
 
         // Assign the team. Prevent host from being juggernaut on start 
         // to allow absent hosting.
-        if(numberHunters == 0)
-        {
-            player.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
-        }
-        else if(numberJuggernauts == 0)
-        {
-            player.juggernautTeam = JUGGERNAUT_TEAM_JUGGERNAUT;
-        }
-        else {
-            player.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
+
+        // TEST CODE
+        // Forces host to become juggernaut first for testing.
+        if(gamemode & GM_HOST_JUGGERNAUT_START){
+            if(numberJuggernauts == 0)
+            {
+                player.juggernautTeam = JUGGERNAUT_TEAM_JUGGERNAUT;
+            }
+        }else{
+                    // END TEST CODE
+            if(numberHunters == 0)
+            {
+                player.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
+            }
+            else if(numberJuggernauts == 0)
+            {
+                player.juggernautTeam = JUGGERNAUT_TEAM_JUGGERNAUT;
+            }
+            else {
+                player.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
+            }
         }
 
         // Set an impossible team so that the color is set in PlayerPreThink
         player.team = -1;
     }
 }
-
 
 void() Juggernaut_PlayerPreThink =
 {

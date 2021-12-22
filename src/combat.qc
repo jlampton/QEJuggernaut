@@ -125,13 +125,13 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage=
 	if (attacker.super_damage_finished > time)
 		damage = damage * 4;
 	
-	if(targ.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT) {
-		damage *= 0.5;
-	}
+	// if(targ.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT) {
+	// 	damage *= JUGGERNAUT_DAMAGE_TAKEN_MULTIPLIER;
+	// }
 
-	if(attacker.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT) {
-		damage *= 1.5;
-	}
+	// if(attacker.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT) {
+	// 	damage *= JUGGERNAUT_DAMAGE_DEALT_MULTIPLIER;
+	// }
 
 // save damage based on the target's armor level
 
@@ -179,10 +179,6 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage=
 
 // team play damage avoidance
 	if ( (teamplay == 1) && ( (coop && targ.classname == "player" && attacker.classname == "player") || (targ.team > 0 && targ.team == attacker.team)) && targ != attacker )
-		return;
-
-	// No self damage for the king.
-	if(targ.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT && targ == attacker)
 		return;
 
 // do the damage

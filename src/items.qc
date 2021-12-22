@@ -83,25 +83,37 @@ float (entity e, float healamount, float ignore) T_Heal =
 	if (e.health <= 0)
 		return 0;
 
-	// Don't let the Juggernaut pick up health before they are below 250.
-	// The Juggernaut starts with 999 health. They can't pick up more until it is below 250.
-	if(e.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT && e.health > 250)
-		return 0;
+	// Juggernaut heal code
+	if(e.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT) {
+		if((!ignore) && (e.health >= JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP))
+			return 0;
+
+		if((ignore) && (e.health >= JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP_MEGAHEALTH))
+			return 0;
+
+		healamount = ceil(healamount);
+		e.health = e.health + healamount;
+
+		if (e.health > JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP_MEGAHEALTH)
+			e.health = JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP_MEGAHEALTH;
+
+		return 1;
+	// End Juggernaut code.
+	} else {
+		if ((!ignore) && (e.health >= other.max_health))
+			return 0;
+
+		healamount = ceil(healamount);
+		e.health = e.health + healamount;
+
+		if ((!ignore) && (e.health >= other.max_health))
+			e.health = other.max_health;
 		
-	if ((!ignore) && (e.health >= other.max_health))
-		return 0;
-	healamount = ceil(healamount);
-
-	e.health = e.health + healamount;
-	if ((!ignore) && (e.health >= other.max_health))
-		e.health = other.max_health;
-
-	
-	if (e.health > 250)
-		e.health = 250;
-	
-	
-	return 1;
+		if (e.health > 250)
+			e.health = 250;
+			
+		return 1;
+	}	
 };
 
 /*QUAKED item_health (.3 .3 1) (0 0 0) (32 32 32) rotten megahealth
@@ -165,18 +177,30 @@ void() health_touch =
 
 	local float healing = self.healamount;
 
-	if(self.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT)
+	if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT){	
 		healing *= 2;
+	}
+		
 
 	if (self.healtype == 2) // Megahealth?  Ignore max_health...
 	{
-		if (other.health >= 250)
+		// Juggernaut health buff check.
+		if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT && other.health >= JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP_MEGAHEALTH){
 			return;
+		}
+		
+		// regular player health check.
+		if (other.juggernautTeam != JUGGERNAUT_TEAM_JUGGERNAUT && other.health >= 250)
+			return;
+
 		if (!T_Heal(other, healing, 1))
 			return;
 	}
 	else
 	{
+		if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT && other.health >= JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP){
+			return;
+		}
 		if (!T_Heal(other, healing, 0))
 			return;
 	}
@@ -251,7 +275,7 @@ void() armor_touch =
 
 	// Don't let the Juggernaut pick up armor if they are above 400.
 	// The juggernaut can carry double armor values.
-	if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT && other.armorvalue > 400)
+	if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT && other.armorvalue >= JUGGERNAUT_ARMOR_BUFF_REPLENISH_LEVEL_CAP)
 		return;
 	
 	if (other.health <= 0)
@@ -282,7 +306,7 @@ void() armor_touch =
 
 	other.armortype = type;
 
-	// Juggernaut code
+	// Juggernaut code to buff armor pickup
 	if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT)
 		value *= 2;
 	// End Juggernaut code.
