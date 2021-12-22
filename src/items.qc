@@ -94,8 +94,11 @@ float (entity e, float healamount, float ignore) T_Heal =
 		healamount = ceil(healamount);
 		e.health = e.health + healamount;
 
-		if (e.health > JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP_MEGAHEALTH)
+		if((ignore) && e.health > JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP_MEGAHEALTH)
 			e.health = JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP_MEGAHEALTH;
+
+		if((!ignore) && e.health > JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP)
+			e.health = JUGGERNAUT_HEALTH_BUFF_REPLENISH_LEVEL_CAP;
 
 		return 1;
 	// End Juggernaut code.

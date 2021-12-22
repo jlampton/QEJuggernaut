@@ -37,6 +37,7 @@ entity(entity p) HydrateJuggernautPlayer {
     local	float	type, value, bit;
     
     p.items =  
+        IT_AXE |
         IT_ROCKET_LAUNCHER | 
         IT_SHOTGUN |
         IT_SUPER_SHOTGUN | 
@@ -65,14 +66,7 @@ entity(entity p) HydrateJuggernautPlayer {
 entity(entity p) ResetNonJuggernautPlayer {
     // Remove anything crazy that the juggernaut had if they
     // finished the map as the juggernaut.
-    p.items =  p.items - 
-    (IT_ROCKET_LAUNCHER |
-    IT_SUPER_SHOTGUN | 
-    IT_NAILGUN |
-    IT_SUPER_NAILGUN |
-    IT_GRENADE_LAUNCHER |
-    IT_LIGHTNING);
-    
+    p.items = IT_AXE | IT_SHOTGUN;
     p.armorvalue = 0;
 	p.items = p.items - (p.items & (IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3));
 	p.ammo_shells = 20;

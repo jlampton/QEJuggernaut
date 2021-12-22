@@ -89,9 +89,9 @@ void(entity attacker) Juggernaut_Killed =
 void(entity target) Juggernaut_PrintSpawnMessage =
 {
     if(target.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT) {
-        centerprint(target,"You are the Juggernaut\n\nYou do 1.5x Damage, take half damage, and powerups are stronger.\nEveryone is coming for you!\n\nReady?");
+        centerprint(target,"You are the Juggernaut\n\nYou have all weapons and full ammo.\nHealth and Armor are worth double.\nEveryone is coming for you!\n\nReady?");
     } else {
-        centerprint(target,"You are a hunter\nFind the Juggernaut\n\nTeam up and eliminate them!");
+        centerprint(target,"You are a hunter\nFind the Juggernaut\nBe careful.. The Juggernaut is really strong.\nTeam up and eliminate them!");
     }
 }
 
@@ -155,7 +155,7 @@ void() Juggernaut_PutClientInServer =
 	}
     else {
         self = ResetNonJuggernautPlayer(self);
-        self.impulse = 1; // Set back to shotgun to remove any remnants of the last weapon used.
+        self.impulse = 2; // Set back to shotgun to remove any remnants of the last weapon used.
     }
 
     Juggernaut_PrintSpawnMessage(self);
