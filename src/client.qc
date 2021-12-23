@@ -1214,6 +1214,12 @@ void() ClientConnect =
 	bprint (self.netname);
 	bprint (" entered the game\n");
 
+	if(!juggernaut_host && Juggernaut_IsHostMode())
+	{
+		juggernaut_host = self;
+		self.juggernautTeam = self.team = JUGGERNAUT_TEAM_HOST;
+	}
+
 	Juggernaut_AssignTeamToPlayer(self);
 
 // a client connecting during an intermission can cause problems
