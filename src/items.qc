@@ -392,6 +392,19 @@ void() bound_other_ammo =
 		other.ammo_cells = 100;
 };
 
+// Juggernaut custom bount_other_ammo
+void() bound_other_ammo_juggernaut = 
+{
+	if (other.ammo_shells > 999)
+	other.ammo_shells = 999;
+	if (other.ammo_nails > 999)
+		other.ammo_nails = 999;
+	if (other.ammo_rockets > 999)
+		other.ammo_rockets = 999;
+	if (other.ammo_cells > 999)
+		other.ammo_cells = 999;
+}
+
 
 float(float w) RankForWeapon =
 {
@@ -515,7 +528,11 @@ void() weapon_touch =
 	sound (other, CHAN_ITEM, "weapons/pkup.wav", 1, ATTN_NORM);
 	stuffcmd (other, "bf\n");
 
-	bound_other_ammo ();
+	if(other.juggernautTeam != JUGGERNAUT_TEAM_JUGGERNAUT)
+		bound_other_ammo();
+	
+	if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT)
+		bound_other_ammo_juggernaut();
 
 // change to the weapon
 	old = other.items;
@@ -657,12 +674,22 @@ local float		best;
 	self = other;
 	best = W_BestWeapon();
 	self = stemp;
+	local float maxAmmo;
+	local float maxAmmo_Nails;
 
+	// Juggernaut max ammo or normal player max ammo.
+	if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT){
+		maxAmmo = 999;
+		maxAmmo_Nails = 999;
+	} else {
+		maxAmmo = 100;
+		maxAmmo_Nails = 200;
+	}
 
 // shotgun
 	if (self.weapon == 1)
 	{
-		if (other.ammo_shells >= 100)
+		if (other.ammo_shells >= maxAmmo)
 			return;
 		other.ammo_shells = other.ammo_shells + self.aflag;
 	}
@@ -670,7 +697,7 @@ local float		best;
 // spikes
 	if (self.weapon == 2)
 	{
-		if (other.ammo_nails >= 200)
+		if (other.ammo_nails >= maxAmmo_Nails)
 			return;
 		other.ammo_nails = other.ammo_nails + self.aflag;
 	}
@@ -678,7 +705,7 @@ local float		best;
 //	rockets
 	if (self.weapon == 3)
 	{
-		if (other.ammo_rockets >= 100)
+		if (other.ammo_rockets >= maxAmmo)
 			return;
 		other.ammo_rockets = other.ammo_rockets + self.aflag;
 	}
@@ -686,12 +713,16 @@ local float		best;
 //	cells
 	if (self.weapon == 4)
 	{
-		if (other.ammo_cells >= 100)
+		if (other.ammo_cells >= maxAmmo)
 			return;
 		other.ammo_cells = other.ammo_cells + self.aflag;
 	}
 
-	bound_other_ammo ();
+	if(other.juggernautTeam != JUGGERNAUT_TEAM_JUGGERNAUT)
+		bound_other_ammo();
+	
+	if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT)
+		bound_other_ammo_juggernaut();
 
 	sprint (other, "You got the ");
 	sprint (other, self.netname);
@@ -1314,7 +1345,11 @@ void() BackpackTouch =
 	old = other.items;
 	other.items = other.items | new;
 
-	bound_other_ammo ();
+	if(other.juggernautTeam != JUGGERNAUT_TEAM_JUGGERNAUT)
+		bound_other_ammo();
+	
+	if(other.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT)
+		bound_other_ammo_juggernaut();
 
 	if (self.ammo_shells)
 	{

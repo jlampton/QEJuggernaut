@@ -3,11 +3,20 @@ float modelindex_player;
 
 void(float corpse) respawn;
 
+void(entity player,float newTeam) Juggernaut_SetTeam =
+{
+    player.team = player.juggernautTeam = newTeam;
+
+    // Send the player colors
+    stuffcmd(player,"color ");
+    stuffcmd(player,ftos(player.team-1));
+    stuffcmd(player,"\n");
+}
 
 void() Juggernaut_SwapTeams_Think =
 {
-    self.owner.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
-    self.enemy.juggernautTeam = JUGGERNAUT_TEAM_JUGGERNAUT;
+    Juggernaut_SetTeam(self.owner,JUGGERNAUT_TEAM_HUNTER);
+    Juggernaut_SetTeam(self.enemy,JUGGERNAUT_TEAM_JUGGERNAUT);
 
     ExecuteAs(respawn(FALSE),self.enemy);
 
@@ -20,40 +29,34 @@ void() Juggernaut_ReassignJuggernaut_Think =
 {
     dprint("Reassigning Juggernaut...\n");
 
-    local entity p;
-    local float foundHunter = FALSE;
+    local entity newJuggernaut;
+    newJuggernaut = RandomPlayer();
 
-    // Loop through all the players until we find a new hunter
-    while((p = LoopPlayers(p)))
-    {
-        // Sometimes, the juggernaut may die due to the environment. 
-        // If so, remove them and respawn as a hunter.
-        if(p.juggernautTeam == JUGGERNAUT_TEAM_JUGGERNAUT){
-            // Ignore any inputs from the player until they are forced to respawn.
-            p.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
-            ExecuteAs(respawn(FALSE),p);
-        }else {
-            if(!foundHunter && p.juggernautTeam != JUGGERNAUT_TEAM_JUGGERNAUT)
-            {
-                // Winner!
-                dprint("\"");
-                dprint(p.netname);
-                dprint("\" is the new Juggernaut\n");
-    
-                p.juggernautTeam = JUGGERNAUT_TEAM_JUGGERNAUT;
-    
-                ExecuteAs(respawn(FALSE),p);
-                foundHunter = TRUE;
-                centerprint(p,"You've been changed to Juggernaut due to the previous player dying or quitting.\n");
-            }
-        }
+    dprint("\"");
+    dprint(newJuggernaut.netname);
+    dprint("\" is the new Juggernaut\n");
+
+    Juggernaut_SetTeam(newJuggernaut, JUGGERNAUT_TEAM_JUGGERNAUT);
+
+    ExecuteAs(respawn(FALSE),newJuggernaut);
+
+    centerprint(newJuggernaut, "You've been changed to Juggernaut due to the previous player quitting.\n");
+
+    if(newJuggernaut == self) {
+        return;
+    }
+    // If there was a previous Juggernaut then set them as a hunter.
+    if(self && self.owner) {
+        Juggernaut_SetTeam(self.owner, JUGGERNAUT_TEAM_HUNTER);
+        self.owner.cnt -= self.owner.cnt & JUGGERNAUT_FL_CANT_RESPAWN;
+        ExecuteAs(respawn(FALSE),self.owner);
     }
 }
 
 void(entity attacker) Juggernaut_Killed =
 {
-    // Check if the killer is a survivor
-	if(attacker.classname == "player"
+    // Check if the killer is a hunter
+	if(attacker && attacker.classname == "player"
 		&& attacker.juggernautTeam != JUGGERNAUT_TEAM_JUGGERNAUT)
 	{
         local entity p;
@@ -79,10 +82,21 @@ void(entity attacker) Juggernaut_Killed =
         // Mark both players as non-respawnable
         self.cnt |= JUGGERNAUT_FL_CANT_RESPAWN;
         attacker.cnt |= JUGGERNAUT_FL_CANT_RESPAWN;
-	}
-    else if(attacker.classname != "player") {
+	} else {
+        if(self.oldenemy)
+        {
+            // Swap teams
+            local entity swap = ExecuteDelayed(Juggernaut_SwapTeams_Think,3.0);
+            swap.owner = self;
+            swap.enemy = self.oldenemy;
+        }
+        else {
+            // The Juggernaut died before anybody hurting them. Choose randomly
+            local entity swap = ExecuteDelayed(Juggernaut_ReassignJuggernaut_Think,3.0);
+            swap.owner = self;
+        }
+
         self.cnt |= JUGGERNAUT_FL_CANT_RESPAWN;
-        ExecuteDelayed(Juggernaut_ReassignJuggernaut_Think,5);
     }
 }
 
@@ -178,29 +192,16 @@ void(entity player) Juggernaut_AssignTeamToPlayer =
                 numberHunters++;
         }
 
-        // Assign the team. Prevent host from being juggernaut on start 
-        // to allow absent hosting.
-
-        // TEST CODE
-        // Forces host to become juggernaut first for testing.
-        if(gamemode & GM_HOST_JUGGERNAUT_START){
-            if(numberJuggernauts == 0)
-            {
-                player.juggernautTeam = JUGGERNAUT_TEAM_JUGGERNAUT;
-            }
-        }else{
-                    // END TEST CODE
-            if(numberHunters == 0)
-            {
-                player.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
-            }
-            else if(numberJuggernauts == 0)
-            {
-                player.juggernautTeam = JUGGERNAUT_TEAM_JUGGERNAUT;
-            }
-            else {
-                player.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
-            }
+        if(numberHunters == 0)
+        {
+            player.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
+        }
+        else if(numberJuggernauts == 0)
+        {
+            player.juggernautTeam = JUGGERNAUT_TEAM_JUGGERNAUT;
+        }
+        else {
+            player.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
         }
 
         // Set an impossible team so that the color is set in PlayerPreThink
