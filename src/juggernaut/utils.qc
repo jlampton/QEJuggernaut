@@ -73,7 +73,7 @@ entity(entity p) ResetNonJuggernautPlayer {
 	p.ammo_nails = 0;
 	p.ammo_rockets = 0;
 	p.ammo_cells = 0;
-    p.max_health = 250;
+    p.max_health = 100;
     p.health = 100;
     return p;
 }
