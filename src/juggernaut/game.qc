@@ -158,6 +158,34 @@ void() Juggernaut_OnPrecache =
 
 void() Juggernaut_PutClientInServer =
 {
+       // Hide host
+       if(juggernaut_host && Juggernaut_GetServerOptions() & SERVERSETTINGS_HIDEHOST) {
+		ExecuteDelayed(Juggernaut_HideHost_Think,0.1).owner = self;
+	}
+
+    // Handle host mode
+    if(juggernaut_host == self)
+	{
+        // Set noclip
+		self.movetype = MOVETYPE_NOCLIP;
+		self.solid = SOLID_NOT;
+
+        // Set flags so bots and monsters don't target
+		self.flags |= FL_FLY | FL_NOTARGET | FL_GODMODE;
+		self.takedamage = DAMAGE_NO;
+
+        // Remove weapons
+		self.items = 0;
+		self.weapon = IT_AXE;
+		self.weaponmodel = string_null;
+
+        // Remove the player model entirely
+		setmodel (self, string_null);
+		self.modelindex = modelindex_player; // Still allow the player to move around
+
+        return;
+	}
+
     // Remove 'cant respawn' flag
     self.cnt -= self.cnt & JUGGERNAUT_FL_CANT_RESPAWN;
 
