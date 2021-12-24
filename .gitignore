@@ -1,8 +1,8 @@
 *.nav
 *.pak
 *.exe
+*.zip
 
-QEJuggernaut.zip
 src/error.log
 src/fteqcc.log
 progs.dat

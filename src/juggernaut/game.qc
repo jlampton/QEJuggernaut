@@ -32,19 +32,15 @@ void() Juggernaut_ReassignJuggernaut_Think =
     local entity newJuggernaut;
     newJuggernaut = RandomPlayer();
 
-    dprint("\"");
-    dprint(newJuggernaut.netname);
-    dprint("\" is the new Juggernaut\n");
-
-    Juggernaut_SetTeam(newJuggernaut, JUGGERNAUT_TEAM_JUGGERNAUT);
-
-    ExecuteAs(respawn(FALSE),newJuggernaut);
-
-    centerprint(newJuggernaut, "You've been changed to Juggernaut due to the previous player quitting.\n");
-
-    if(newJuggernaut == self) {
-        return;
+    if(newJuggernaut){
+        dprint("\"");
+        dprint(newJuggernaut.netname);
+        dprint("\" is the new Juggernaut\n");
+        Juggernaut_SetTeam(newJuggernaut, JUGGERNAUT_TEAM_JUGGERNAUT);
+        ExecuteAs(respawn(FALSE),newJuggernaut);
+        centerprint(newJuggernaut, "You've been changed to Juggernaut due to the previous player quitting.\n");
     }
+
     // If there was a previous Juggernaut then set them as a hunter.
     if(self && self.owner) {
         Juggernaut_SetTeam(self.owner, JUGGERNAUT_TEAM_HUNTER);
@@ -220,11 +216,11 @@ void(entity player) Juggernaut_AssignTeamToPlayer =
                 numberHunters++;
         }
 
-        if(numberHunters == 0)
-        {
-            player.juggernautTeam = JUGGERNAUT_TEAM_HUNTER;
+        if(player == juggernaut_host){
+            return;
         }
-        else if(numberJuggernauts == 0)
+
+        if(numberJuggernauts == 0)
         {
             player.juggernautTeam = JUGGERNAUT_TEAM_JUGGERNAUT;
         }

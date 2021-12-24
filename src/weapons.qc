@@ -873,6 +873,9 @@ void()	player_rocket1;
 void() W_Attack =
 {
 	local	float	r;
+	// Ignore attacks from the host
+	if(juggernaut_host == self)
+		return;
 
 	if (!W_CheckNoAmmo ())
 		return;
@@ -1057,6 +1060,9 @@ void() CycleWeaponCommand =
 {
 	local	float	it, am;
 
+	if(juggernaut_host == self)
+		return;
+
 	it = self.items;
 	self.impulse = 0;
 
@@ -1130,6 +1136,9 @@ Go to the prev weapon with ammo
 void() CycleWeaponReverseCommand =
 {
 	local	float	it, am;
+
+	if(juggernaut_host == self)
+		return;
 
 	it = self.items;
 	self.impulse = 0;

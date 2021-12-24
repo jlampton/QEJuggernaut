@@ -258,7 +258,7 @@ void() IntermissionThink =
 	if (time < intermission_exittime)
 		return;
 
-	if (!self.button0 && !self.button1 && !self.button2)
+	if (!juggernaut_host && !self.button0 && !self.button1 && !self.button2)
 		return;
 
 	ExitIntermission ();
@@ -943,7 +943,7 @@ void() PlayerPreThink =
 
 	makevectors (self.v_angle);		// is this still used
 
-	if(self.movetype == MOVETYPE_NOCLIP)
+	if(self.movetype == MOVETYPE_NOCLIP && self != juggernaut_host)
 		self.movetype = MOVETYPE_FLY;
 
 	Juggernaut_PlayerPreThink();
@@ -1154,7 +1154,7 @@ void() PlayerPostThink =
 	if (self.deadflag)
 		return;
 
-	if(self.movetype == MOVETYPE_FLY)
+	if(self.movetype == MOVETYPE_FLY && self != juggernaut_host)
 		self.movetype = MOVETYPE_NOCLIP;
 
 		// do weapon stuff
