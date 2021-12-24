@@ -1,4 +1,4 @@
-# QE Hunter
+# QE Juggernaut
 Quake Enhanced Juggernaut (A modification of the QEHunter mod by [JPiolho.](https://github.com/jpiolho/QEHunter))
 
 This is a multiplayer mod where one player is the Juggernaut. The Juggernaut starts with a buffed health and armor amount.
